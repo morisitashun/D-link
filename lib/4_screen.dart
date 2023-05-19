@@ -32,7 +32,7 @@ class _forScreenState extends State<forScreen> {
 
   // カメラまたはギャラリーから画像を選択するメソッド
   _getImage(ImageSource source) async {
-    final pickedFile = await picker.getImage(source: source);
+    final pickedFile = await picker.pickImage(source: source);
 
     setState(() {
       if (pickedFile != null) {
