@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'third_screen.dart';
+import 'first_screen.dart';
 
 class SecondScreen extends StatefulWidget {
   @override
@@ -8,19 +11,123 @@ class SecondScreen extends StatefulWidget {
 
 class _SecondScreenState extends State<SecondScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
-  bool _isSearching = false; // 検索バーの表示状態を管理するフラグ
-  TextEditingController _searchController =
-      TextEditingController(); // 検索バーのテキスト入力を受け取るコントローラ
+  late CameraPosition _initialPosition;
+  GoogleMapController? _mapController;
+  MapType _currentMapType = MapType.normal;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
 
   @override
   void dispose() {
-    _searchController.dispose(); // コントローラの解放
+    _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        _initialPosition = CameraPosition(
+          target: LatLng(position.latitude, position.longitude),
+          zoom: 15,
+        );
+      });
+    } catch (e) {
+      print('位置情報の取得に失敗しました: $e');
+    }
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      _mapController = controller;
+    });
+  }
+
+  void _moveToLocation(LatLng location) {
+    if (_mapController != null) {
+      _mapController!.animateCamera(CameraUpdate.newLatLng(location));
+    }
+  }
+
+  void _showSecondMenuSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              color: Colors.green,
+              child: ListView(
+                controller: scrollController,
+                children: [
+                  ListTile(
+                    title: Text(
+                      '2つ目のメニュー',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text(
+                      'アイテム1',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onTap: () {
+                      // アイテム1の処理
+                    },
+                  ),
+                  ListTile(
+                    title: Text(
+                      'アイテム2',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onTap: () {
+                      // アイテム2の処理
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _toggleMapType() {
+    setState(() {
+      _currentMapType = _currentMapType == MapType.normal
+          ? MapType.satellite
+          : MapType.normal;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final double mapWidth = MediaQuery.of(context).size.width * 1;
+    final double mapHeight = MediaQuery.of(context).size.height * 0.775;
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -28,11 +135,11 @@ class _SecondScreenState extends State<SecondScreen> {
             ? TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: '検索',
+                  hintText: '場所やキーワードを検索',
                   border: InputBorder.none,
                 ),
                 style: TextStyle(color: Colors.white, fontSize: 18),
-                autofocus: true, // キーボードを自動的に表示
+                autofocus: true,
               )
             : Text('探す'),
         leading: IconButton(
@@ -40,28 +147,54 @@ class _SecondScreenState extends State<SecondScreen> {
           onPressed: () {
             _scaffoldKey.currentState?.openDrawer();
           },
-          color: Colors.white, // ハンバーガーメニューのアイコン色を白に変更
+          color: Colors.white,
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
               setState(() {
-                _isSearching = !_isSearching; // 検索バーの表示状態を切り替える
+                _isSearching = !_isSearching;
               });
             },
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          '地図を表示',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: mapWidth,
+              height: mapHeight,
+              child: GoogleMap(
+                initialCameraPosition: _initialPosition,
+                onMapCreated: _onMapCreated,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                zoomControlsEnabled: true,
+                compassEnabled: true,
+                mapType: _currentMapType,
+              ),
+            ),
+          ),
+          Container(
+            color: Colors.green,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: _showSecondMenuSheet,
+                  color: Colors.white,
+                )
+              ],
+            ),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: Container(
-          color: Colors.green, // メニュー全体の背景色を緑に変更
+          color: Colors.green,
           child: ListView(
             children: [
               ListTile(
@@ -83,10 +216,11 @@ class _SecondScreenState extends State<SecondScreen> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.popUntil(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    ModalRoute.withName('/'),
-                  ); // 最初の画面に戻る処理
+                    MaterialPageRoute(builder: (context) => FirstScreen()),
+                    (Route<dynamic> route) => false,
+                  );
                 },
               ),
               ListTile(
@@ -103,7 +237,20 @@ class _SecondScreenState extends State<SecondScreen> {
                     MaterialPageRoute(
                       builder: (context) => ThirdScreen(),
                     ),
-                  ); // 3つ目の画面に遷移
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  '地図のスタイルを切り替える',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+                onTap: () {
+                  _toggleMapType(); // 地図のスタイルを切り替えるメソッドを呼び出す
+                  Navigator.pop(context); // Drawerを閉じる
                 },
               ),
             ],

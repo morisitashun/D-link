@@ -29,18 +29,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  geolocator: ^7.1.3
+  geolocator:
   image_picker: ^0.8.4+4
-  firebase_storage: ^10.2.0
-  cloud_firestore: ^2.5.4
-  flutter_map: ^0.14.0
-  firebase_core_platform_interface: 4.5.1
-  firebase_messaging: ^13.0.4 
+  flutter_map: ^4.0.0
+  firebase_core_platform_interface: ^4.8.0
+  firebase_messaging: ^14.6.3 
+  flutter_slidable: ^3.0.0
+  firebase_core: ^2.14.0
+  cloud_firestore: ^4.8.2
+  google_sign_in: ^6.1.1
+  share: ^2.0.4
+  firebase_storage: ^11.2.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   multi_image_picker: any
+  google_maps_flutter: 
+  file_picker: ^5.3.2
 
 dev_dependencies:
   flutter_test:
@@ -52,12 +58,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  flutter_launcher_icons: ^0.11.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter_icons:       
   android: true
   ios: true
-  image_path: "assets/9.png"
+  image_path: "assets/00.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

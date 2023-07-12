@@ -44,40 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA7sVsVPWkU8sZCYmKQjX5AxXK1Qir9y10',
-    appId: '1:591537151597:web:9281540bb7f359dded2964',
-    messagingSenderId: '591537151597',
-    projectId: 'nanzyamonzya',
-    authDomain: 'nanzyamonzya.firebaseapp.com',
-    storageBucket: 'nanzyamonzya.appspot.com',
-    measurementId: 'G-XRF9G62J88',
+    apiKey: 'AIzaSyD9pBwkZSsFY2Nex8Imrkq4S6CKJ6MfcdM',
+    appId: '1:774306870917:web:ea41408261581faeb8dbec',
+    messagingSenderId: '774306870917',
+    projectId: 'otamesi-71c58',
+    authDomain: 'otamesi-71c58.firebaseapp.com',
+    storageBucket: 'otamesi-71c58.appspot.com',
+    measurementId: 'G-9G0V8LQCXM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB2ZaEUDn76TfzwArCLoezBl8z7fc6jtEI',
-    appId: '1:591537151597:android:05dd8cdd68e47e6eed2964',
-    messagingSenderId: '591537151597',
-    projectId: 'nanzyamonzya',
-    storageBucket: 'nanzyamonzya.appspot.com',
+    apiKey: 'AIzaSyDbbrwgIuQX9DO-la_7zSCV1I9uhL8CNqs',
+    appId: '1:774306870917:android:7c6903c7b4d1c60bb8dbec',
+    messagingSenderId: '774306870917',
+    projectId: 'otamesi-71c58',
+    storageBucket: 'otamesi-71c58.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC_B9uGPQKQa2jkV3HdKoUkQFPdQFVreEo',
-    appId: '1:591537151597:ios:a4ec2a264022ec7bed2964',
-    messagingSenderId: '591537151597',
-    projectId: 'nanzyamonzya',
-    storageBucket: 'nanzyamonzya.appspot.com',
-    iosClientId: '591537151597-ia9m9co4f1dppctbhpappd2hs3ngt64a.apps.googleusercontent.com',
-    iosBundleId: 'com.example.flutterApplication1',
+    apiKey: 'AIzaSyABsdDVRGyokkgtXDWws_W1h6h36nj7XB4',
+    appId: '1:774306870917:ios:e99bc5e81e1d9e20b8dbec',
+    messagingSenderId: '774306870917',
+    projectId: 'otamesi-71c58',
+    storageBucket: 'otamesi-71c58.appspot.com',
+    iosClientId: '774306870917-o0q1jg4ck6aliqr9gsa1paof897i7hac.apps.googleusercontent.com',
+    iosBundleId: 'otamesi',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC_B9uGPQKQa2jkV3HdKoUkQFPdQFVreEo',
-    appId: '1:591537151597:ios:a4ec2a264022ec7bed2964',
-    messagingSenderId: '591537151597',
-    projectId: 'nanzyamonzya',
-    storageBucket: 'nanzyamonzya.appspot.com',
-    iosClientId: '591537151597-ia9m9co4f1dppctbhpappd2hs3ngt64a.apps.googleusercontent.com',
+    apiKey: 'AIzaSyABsdDVRGyokkgtXDWws_W1h6h36nj7XB4',
+    appId: '1:774306870917:ios:57875b16930f1e3eb8dbec',
+    messagingSenderId: '774306870917',
+    projectId: 'otamesi-71c58',
+    storageBucket: 'otamesi-71c58.appspot.com',
+    iosClientId: '774306870917-ltaudb10lknfb1e022qgkmf46arteof2.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutterApplication1',
   );
 }
