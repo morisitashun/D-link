@@ -14,7 +14,7 @@ class _SecondScreenState extends State<SecondScreen> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
 
-  late CameraPosition _initialPosition;
+  CameraPosition? _initialPosition;
   GoogleMapController? _mapController;
   MapType _currentMapType = MapType.normal;
 
@@ -167,7 +167,8 @@ class _SecondScreenState extends State<SecondScreen> {
               width: mapWidth,
               height: mapHeight,
               child: GoogleMap(
-                initialCameraPosition: _initialPosition,
+                initialCameraPosition:
+                    _initialPosition ?? CameraPosition(target: LatLng(0, 0)),
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: true,
