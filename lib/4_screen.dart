@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'first_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ForScreen extends StatefulWidget {
   const ForScreen({Key? key}) : super(key: key);
@@ -217,6 +218,25 @@ class _ForScreenState extends State<ForScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _savePostToFirestore() async {
+    if (_image == null || _currentPosition == null) {
+      return;
+    }
+
+    await FirebaseFirestore.instance.collection('posts').add({
+      'selectedValue': selectedValue,
+      'latitude': _currentPosition!.latitude,
+      'longitude': _currentPosition!.longitude,
+      'comment': _textEditingController.text,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PostCompleteScreen()),
     );
   }
 }

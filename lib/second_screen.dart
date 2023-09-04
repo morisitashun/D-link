@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'third_screen.dart';
 import 'first_screen.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class SecondScreen extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _SecondScreenState extends State<SecondScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  PanelController panelController = PanelController();
 
   CameraPosition? _initialPosition;
   GoogleMapController? _mapController;
@@ -59,62 +61,6 @@ class _SecondScreenState extends State<SecondScreen> {
     }
   }
 
-  void _showSecondMenuSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              color: Colors.green,
-              child: ListView(
-                controller: scrollController,
-                children: [
-                  ListTile(
-                    title: Text(
-                      '2つ目のメニュー',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(
-                      'アイテム1',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    onTap: () {
-                      // アイテム1の処理
-                    },
-                  ),
-                  ListTile(
-                    title: Text(
-                      'アイテム2',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    onTap: () {
-                      // アイテム2の処理
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   void _toggleMapType() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
@@ -127,6 +73,10 @@ class _SecondScreenState extends State<SecondScreen> {
   Widget build(BuildContext context) {
     final double mapWidth = MediaQuery.of(context).size.width * 1;
     final double mapHeight = MediaQuery.of(context).size.height * 0.775;
+    BorderRadiusGeometry radius = BorderRadius.only(
+      topLeft: Radius.circular(24.0),
+      topRight: Radius.circular(24.0),
+    );
 
     return Scaffold(
       key: _scaffoldKey,
@@ -178,19 +128,26 @@ class _SecondScreenState extends State<SecondScreen> {
               ),
             ),
           ),
-          Container(
-            color: Colors.green,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          SlidingUpPanel(
+            panel: Column(
               children: [
-                IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: _showSecondMenuSheet,
-                  color: Colors.white,
-                )
+                SizedBox(height: 10),
+                Icon(Icons.maximize,
+                    color: Colors.white, size: 40), // ドラッグハンドルのアイコン
+                SizedBox(height: 10),
+                Text(
+                  '投稿内容を掲載', // ここにタイトルを追加
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 3.75),
+                ),
               ],
             ),
-          ),
+            color: Colors.green,
+            borderRadius: radius,
+          )
         ],
       ),
       drawer: Drawer(
