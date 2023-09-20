@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'first_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'third_screen.dart';
 
 class ForScreen extends StatefulWidget {
   const ForScreen({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _ForScreenState extends State<ForScreen> {
     "チェリオ",
     "面白い自動販売機",
     "変わったラインナップの自動販売機",
-    "コーラ"
+    "コーラ",
   ];
   Position? _currentPosition;
   final picker = ImagePicker();
@@ -247,32 +248,57 @@ class PostCompleteScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('投稿完了'),
+        automaticallyImplyLeading: false, // 左矢印ボタンを非表示にする
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '投稿が完了しました！',
               style: TextStyle(fontSize: 24),
             ),
-            ElevatedButton(
-              style: ButtonStyle(
-                fixedSize: MaterialStateProperty.all<Size>(Size(200, 50)),
-              ),
-              child: Text(
-                'タイトルに戻る',
-                style: TextStyle(
-                  fontSize: 20,
+            SizedBox(height: 200),
+            Container(
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all<Size>(Size(200, 50)),
                 ),
+                child: Text(
+                  '続けて投稿する',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => ThirdScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
               ),
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => FirstScreen()),
-                  (Route<dynamic> route) => false,
-                );
-              },
+            ),
+            SizedBox(height: 50),
+            Container(
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all<Size>(Size(200, 50)),
+                ),
+                child: Text(
+                  'タイトルに戻る',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => FirstScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                },
+              ),
             ),
           ],
         ),

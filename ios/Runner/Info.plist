@@ -51,5 +51,10 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+<string>カメラへのアクセス許可の説明</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>フォトライブラリへのアクセス許可の説明</string>
+
 </dict>
 </plist>

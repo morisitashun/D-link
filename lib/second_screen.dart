@@ -20,6 +20,18 @@ class _SecondScreenState extends State<SecondScreen> {
   GoogleMapController? _mapController;
   MapType _currentMapType = MapType.normal;
 
+  // カテゴリーのリスト
+  final List<String> categories = [
+    "近い順",
+    "遠い順",
+    "投稿が新しい順",
+    "投稿が古い順",
+
+    // 他のカテゴリーを追加
+  ];
+
+  String selectedCategory = "近い順"; // 最初のカテゴリーを選択済みとして初期化
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +64,10 @@ class _SecondScreenState extends State<SecondScreen> {
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       _mapController = controller;
+      if (_initialPosition != null) {
+        _mapController
+            ?.animateCamera(CameraUpdate.newCameraPosition(_initialPosition!));
+      }
     });
   }
 
@@ -63,9 +79,8 @@ class _SecondScreenState extends State<SecondScreen> {
 
   void _toggleMapType() {
     setState(() {
-      _currentMapType = _currentMapType == MapType.normal
-          ? MapType.satellite
-          : MapType.normal;
+      _currentMapType =
+          _currentMapType == MapType.normal ? MapType.hybrid : MapType.normal;
     });
   }
 
@@ -113,6 +128,7 @@ class _SecondScreenState extends State<SecondScreen> {
       body: Column(
         children: [
           Expanded(
+            // ドロップダウンボタンの高さ
             child: Container(
               width: mapWidth,
               height: mapHeight,
@@ -132,17 +148,50 @@ class _SecondScreenState extends State<SecondScreen> {
             panel: Column(
               children: [
                 SizedBox(height: 10),
-                Icon(Icons.maximize,
-                    color: Colors.white, size: 40), // ドラッグハンドルのアイコン
-                SizedBox(height: 10),
-                Text(
-                  '投稿内容を掲載', // ここにタイトルを追加
-                  style: TextStyle(
-                      fontSize: 20,
+                Icon(Icons.maximize, color: Colors.white, size: 40),
+
+                ListTile(
+                  title: Text(
+                    '投稿一覧',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      height: 3.75),
-                ),
+                    ),
+                  ),
+                ), // ドラッグハンドルのアイコン
+                SizedBox(height: 5),
+                // カテゴリー選択用のドロップダウンメニュー
+                Container(
+                  width: 250, // ドロップダウンボタンの幅
+                  height: 50, // ドロップダウンボタンの高さ
+                  child: DropdownButton<String>(
+                    value: selectedCategory,
+                    items: categories.map((String category) {
+                      return DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(
+                          category,
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCategory = newValue!;
+                      });
+                    },
+                    style: TextStyle(
+                      fontSize: 30, // ドロップダウンボタンの文字の大きさ
+                      color: Colors.white, // ドロップダウンボタンの文字の色
+                    ),
+                    dropdownColor: Colors.green, // ドロップダウンメニューの背景色
+                  ),
+                )
               ],
             ),
             color: Colors.green,
