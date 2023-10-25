@@ -215,7 +215,23 @@ class _SecondScreenState extends State<SecondScreen> {
                     ),
                     dropdownColor: Colors.green, // ドロップダウンメニューの背景色
                   ),
-                )
+                ),
+                // Firestore から取得したテキストをリストビューで表示
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: postContents.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          postContents[index],
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
             color: Colors.green,
