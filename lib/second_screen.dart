@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'third_screen.dart';
 import 'first_screen.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SecondScreen extends StatefulWidget {
   @override
@@ -26,16 +27,17 @@ class _SecondScreenState extends State<SecondScreen> {
     "遠い順",
     "投稿が新しい順",
     "投稿が古い順",
-
-    // 他のカテゴリーを追加
   ];
 
   String selectedCategory = "近い順"; // 最初のカテゴリーを選択済みとして初期化
+
+  List<String> postContents = []; // Firestore から取得した投稿内容を格納
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _fetchPostContents(); // Firestore から投稿内容を取得
   }
 
   @override
@@ -64,10 +66,8 @@ class _SecondScreenState extends State<SecondScreen> {
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       _mapController = controller;
-      if (_initialPosition != null) {
-        _mapController
-            ?.animateCamera(CameraUpdate.newCameraPosition(_initialPosition!));
-      }
+      _mapController
+          ?.animateCamera(CameraUpdate.newCameraPosition(_initialPosition!));
     });
   }
 
@@ -82,6 +82,22 @@ class _SecondScreenState extends State<SecondScreen> {
       _currentMapType =
           _currentMapType == MapType.normal ? MapType.hybrid : MapType.normal;
     });
+  }
+
+  Future<void> _fetchPostContents() async {
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('posts').get();
+    postContents.clear(); // Clear the list first
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
+      Map<String, dynamic>? data =
+          doc.data() as Map<String, dynamic>?; // データをMapとしてキャスト
+      if (data != null) {
+        var content = data['content'] as String?;
+        if (content != null) {
+          postContents.add(content);
+        }
+      }
+    }
   }
 
   @override
@@ -106,7 +122,14 @@ class _SecondScreenState extends State<SecondScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
                 autofocus: true,
               )
-            : Text('探す'),
+            : Text(
+                '探す',
+                style: TextStyle(
+                  color: Colors.white, // タイトルの色を白に設定
+                  fontSize: 22,
+                ),
+              ),
+        backgroundColor: Colors.green, // AppBarの背景色を緑に設定
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
@@ -122,6 +145,7 @@ class _SecondScreenState extends State<SecondScreen> {
                 _isSearching = !_isSearching;
               });
             },
+            color: Colors.white,
           ),
         ],
       ),

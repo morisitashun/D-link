@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
-import '4_screen.dart';
+import 'for_screen.dart';
 
 class ThirdScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('投稿する'),
+        title: Text(
+          '投稿する',
+          style: TextStyle(
+            color: Colors.white, // タイトルの色を白に設定
+            fontSize: 22,
+          ),
+        ),
+        iconTheme: IconThemeData(color: Colors.white), // 戻るボタンの色を白に設定
+        automaticallyImplyLeading: true, // 戻るボタンを表示
+        backgroundColor: Colors.green, // AppBarの背景色を緑色に設定
       ),
       body: SingleChildScrollView(
         child: Center(

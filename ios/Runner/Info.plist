@@ -26,8 +26,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>カメラへのアクセス許可の説明</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required to display nearby places.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>フォトライブラリへのアクセス許可の説明</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -51,10 +55,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-<string>カメラへのアクセス許可の説明</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>フォトライブラリへのアクセス許可の説明</string>
-
 </dict>
 </plist>

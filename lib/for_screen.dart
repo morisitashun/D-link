@@ -3,9 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'first_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'first_screen.dart';
 import 'third_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MaterialApp(
+    home: ForScreen(),
+  ));
+}
 
 class ForScreen extends StatefulWidget {
   const ForScreen({Key? key}) : super(key: key);
@@ -25,8 +35,10 @@ class _ForScreenState extends State<ForScreen> {
   ];
   Position? _currentPosition;
   final picker = ImagePicker();
-  File? _image;
+  File? _image; // null安全にする
   TextEditingController _textEditingController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   @override
   void initState() {
@@ -47,23 +59,31 @@ class _ForScreenState extends State<ForScreen> {
   _getImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
 
-    setState(() {
-      if (pickedFile != null) {
+    if (pickedFile != null) {
+      setState(() {
         _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+      });
+    } else {
+      print('No image selected.');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('投稿画面'),
+        title: Text(
+          '投稿画面',
+          style: TextStyle(
+            color: Colors.white, // タイトルの色を白に設定
+            fontSize: 22,
+          ),
+        ),
+        iconTheme: IconThemeData(color: Colors.white), // 戻るボタンの色を白に設定
+        automaticallyImplyLeading: true, // 戻るボタンを表示
+        backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
-        // SingleChildScrollViewでラップ
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,7 +173,9 @@ class _ForScreenState extends State<ForScreen> {
                     borderRadius: BorderRadius.circular(32.0),
                   ),
                   child: _image != null
-                      ? Image.file(_image!)
+                      ? Image.file(
+                          _image!,
+                        )
                       : Center(
                           child: Text(
                             '写真を選択してください',
@@ -208,14 +230,11 @@ class _ForScreenState extends State<ForScreen> {
             ElevatedButton(
               onPressed: () {
                 // Process when the post button is pressed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PostCompleteScreen()),
-                );
+                _savePostToFirestore();
               },
               child: Text('投稿する'),
             ),
-            SizedBox(height: 100), // 空きスペースの追加
+            SizedBox(height: 100),
           ],
         ),
       ),
@@ -224,21 +243,36 @@ class _ForScreenState extends State<ForScreen> {
 
   Future<void> _savePostToFirestore() async {
     if (_image == null || _currentPosition == null) {
+      // エラーハンドリング: ファイルまたは位置情報が不足している場合
+      print('Error: File or location information is missing.');
       return;
     }
 
-    await FirebaseFirestore.instance.collection('posts').add({
-      'selectedValue': selectedValue,
-      'latitude': _currentPosition!.latitude,
-      'longitude': _currentPosition!.longitude,
-      'comment': _textEditingController.text,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    try {
+      final Reference storageReference =
+          _storage.ref().child('images/${DateTime.now()}.jpg');
+      UploadTask uploadTask = storageReference.putFile(_image!);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => PostCompleteScreen()),
-    );
+      await uploadTask;
+
+      final imageUrl = await storageReference.getDownloadURL();
+
+      await _firestore.collection('posts').add({
+        'selectedValue': selectedValue,
+        'latitude': _currentPosition!.latitude,
+        'longitude': _currentPosition!.longitude,
+        'comment': _textEditingController.text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'image_url': imageUrl, // Firestoreへのデータ保存を行う前にアップロードが完了する
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PostCompleteScreen()),
+      );
+    } catch (e) {
+      print('Error saving data to Firestore: $e');
+    }
   }
 }
 
@@ -247,8 +281,15 @@ class PostCompleteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('投稿完了'),
-        automaticallyImplyLeading: false, // 左矢印ボタンを非表示にする
+        title: Text(
+          '投稿完了',
+          style: TextStyle(
+            color: Colors.white, // タイトルの色を白に設定
+            fontSize: 22,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.green,
       ),
       body: Center(
         child: Column(
@@ -305,10 +346,4 @@ class PostCompleteScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: ForScreen(),
-  ));
 }

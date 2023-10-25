@@ -11,14 +11,17 @@ class FirstScreen extends StatelessWidget {
           'D・link',
           style: TextStyle(
             fontSize: 30,
+            color: Colors.white,
           ),
         ),
+        backgroundColor: Colors.green, // AppBarの背景色を緑色に設定
       ),
       body: Container(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset('assets/00.png'),
               ElevatedButton(
                 style: ButtonStyle(
                   fixedSize: MaterialStateProperty.all<Size>(Size(200, 50)),
