@@ -25,13 +25,19 @@ class ForScreen extends StatefulWidget {
 }
 
 class _ForScreenState extends State<ForScreen> {
-  var selectedValue = "飲み物の自動販売機";
+  var selectedValue = "コカコーラ";
   final lists = <String>[
-    "飲み物の自動販売機",
+    "コカコーラ",
     "チェリオ",
-    "面白い自動販売機",
-    "変わったラインナップの自動販売機",
-    "コーラ",
+    "ダイオー",
+    "BOSS",
+    "アサヒ",
+    "キリン",
+    "100円〜",
+    "食べ物系",
+    "酒、タバコ",
+    "アイス（１７など）",
+    "その他（面白い系など）",
   ];
   Position? _currentPosition;
   final picker = ImagePicker();
@@ -39,6 +45,7 @@ class _ForScreenState extends State<ForScreen> {
   TextEditingController _textEditingController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  bool _mapLoading = true;
 
   @override
   void initState() {
@@ -47,11 +54,12 @@ class _ForScreenState extends State<ForScreen> {
   }
 
   // Get the current location
-  _getCurrentLocation() async {
+  Future<void> _getCurrentLocation() async {
     final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _currentPosition = position;
+      _mapLoading = false;
     });
   }
 
@@ -75,12 +83,12 @@ class _ForScreenState extends State<ForScreen> {
         title: Text(
           '投稿画面',
           style: TextStyle(
-            color: Colors.white, // タイトルの色を白に設定
+            color: Colors.white,
             fontSize: 22,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.white), // 戻るボタンの色を白に設定
-        automaticallyImplyLeading: true, // 戻るボタンを表示
+        iconTheme: IconThemeData(color: Colors.white),
+        automaticallyImplyLeading: true,
         backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
@@ -91,24 +99,24 @@ class _ForScreenState extends State<ForScreen> {
             ListTile(
               title: Text(
                 '位置を確認してください↓',
-                textAlign: TextAlign.center, // テキストを中央に配置
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.green,
                 ),
               ),
-              onTap: () {
-                // アイテム2の処理
-              },
+              onTap: () {},
             ),
-            if (_currentPosition != null)
+            if (_mapLoading)
+              CircularProgressIndicator() // Show loading indicator while waiting for the map.
+            else if (_currentPosition != null)
               Container(
                 height: 350,
                 child: GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: LatLng(
-                      _currentPosition?.latitude ?? 0.0,
-                      _currentPosition?.longitude ?? 0.0,
+                      _currentPosition!.latitude,
+                      _currentPosition!.longitude,
                     ),
                     zoom: 15,
                   ),
@@ -116,8 +124,8 @@ class _ForScreenState extends State<ForScreen> {
                     Marker(
                       markerId: MarkerId('currentLocation'),
                       position: LatLng(
-                        _currentPosition?.latitude ?? 0.0,
-                        _currentPosition?.longitude ?? 0.0,
+                        _currentPosition!.latitude,
+                        _currentPosition!.longitude,
                       ),
                     ),
                   },
@@ -126,15 +134,13 @@ class _ForScreenState extends State<ForScreen> {
             ListTile(
               title: Text(
                 'コメントを入力してください↓',
-                textAlign: TextAlign.center, // テキストを中央に配置
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.green,
                 ),
               ),
-              onTap: () {
-                // アイテム2の処理
-              },
+              onTap: () {},
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -148,15 +154,13 @@ class _ForScreenState extends State<ForScreen> {
             ListTile(
               title: Text(
                 '投稿する写真をアップロードしてください↓',
-                textAlign: TextAlign.center, // テキストを中央に配置
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.green,
                 ),
               ),
-              onTap: () {
-                // アイテム2の処理
-              },
+              onTap: () {},
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -200,15 +204,13 @@ class _ForScreenState extends State<ForScreen> {
             ListTile(
               title: Text(
                 'カテゴリーを選択↓',
-                textAlign: TextAlign.center, // テキストを中央に配置
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.green,
                 ),
               ),
-              onTap: () {
-                // アイテム2の処理
-              },
+              onTap: () {},
             ),
             DropdownButton<String>(
               value: selectedValue,
@@ -229,7 +231,6 @@ class _ForScreenState extends State<ForScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Process when the post button is pressed
                 _savePostToFirestore();
               },
               child: Text('投稿する'),
@@ -243,7 +244,6 @@ class _ForScreenState extends State<ForScreen> {
 
   Future<void> _savePostToFirestore() async {
     if (_image == null || _currentPosition == null) {
-      // エラーハンドリング: ファイルまたは位置情報が不足している場合
       print('Error: File or location information is missing.');
       return;
     }
@@ -263,7 +263,7 @@ class _ForScreenState extends State<ForScreen> {
         'longitude': _currentPosition!.longitude,
         'comment': _textEditingController.text,
         'timestamp': FieldValue.serverTimestamp(),
-        'image_url': imageUrl, // Firestoreへのデータ保存を行う前にアップロードが完了する
+        'image_url': imageUrl,
       });
 
       Navigator.push(
@@ -284,7 +284,7 @@ class PostCompleteScreen extends StatelessWidget {
         title: Text(
           '投稿完了',
           style: TextStyle(
-            color: Colors.white, // タイトルの色を白に設定
+            color: Colors.white,
             fontSize: 22,
           ),
         ),
